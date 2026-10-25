@@ -30,6 +30,24 @@ class AuthTests(TestCase):
         self.assertTrue(user.check_password(self.password))
         self.assertEqual(int(self.client.session['_auth_user_id']), user.pk)
 
+    def test_registered_full_name_is_shown_immediately_and_after_login(self):
+        full_name = 'Петрова Анна Сергеевна'
+        self.registration(name=full_name)
+        for revisit in (False, True):
+            if revisit:
+                self.client.post(reverse('logout'))
+                self.client.post(reverse('login'), {'username': 'director@example.com', 'password': self.password})
+            response = self.client.get(reverse('home'))
+            self.assertEqual(response.context['account_data']['name'], full_name)
+            self.assertContains(response, f'id="greeting">{full_name}</span>')
+            self.assertContains(response, f'id="user-name">{full_name}</strong>')
+            self.assertContains(response, f'value="{full_name}" readonly')
+
+    def test_account_name_supports_standard_first_and_last_name(self):
+        user = User.objects.create_user(username='name@example.com', first_name='Анна', last_name='Петрова')
+        self.client.force_login(user)
+        self.assertEqual(self.client.get('/').context['account_data']['name'], 'Анна Петрова')
+
     def test_duplicate_email_is_rejected_case_insensitively(self):
         User.objects.create_user(username='director@example.com', email='director@example.com', password=self.password)
         response = self.registration(email='DIRECTOR@example.com')

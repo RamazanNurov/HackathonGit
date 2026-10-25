@@ -44,3 +44,19 @@ dialog{border:1px solid #d1dfcb;border-radius:22px;padding:32px;box-shadow:0 35p
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .primary,.outline,.nav,.tabs button{overflow:hidden}
+
+/* Account inputs: a recessed surface with a dedicated icon and focus glow. */
+.auth-input-box{position:relative;isolation:isolate}
+.auth-input-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#e5eddf;color:#6a8560;pointer-events:none;transition:background-color .2s,color .2s,box-shadow .2s}
+.auth-input-icon svg{width:19px;height:19px}
+.auth-input-box input{min-height:58px;padding:16px 15px 16px 60px;border:1px solid #d9e3d1;border-radius:14px;background:linear-gradient(145deg,#edf2e8,#f7f9f3);box-shadow:inset 0 2px 4px #28412505,0 1px 0 #ffffff;color:#1f3e2b;font-size:14px}
+.auth-input-box input::placeholder{color:#899a81;font-size:12px;opacity:1}
+.auth-input-box input:hover{background:#f3f7ed;border-color:#b4c9a7}
+.auth-input-box input:focus{outline:none;border-color:#7caa6c;background:#fbfdf7;box-shadow:0 0 0 4px #8fba751a,0 5px 15px #41672c08}
+.auth-input-box:focus-within .auth-input-icon{color:#2b6c3d;background:#dceecf;box-shadow:0 2px 6px #41672c08}
+.auth-input-box input[aria-invalid=true]{border-color:#c48570;background:#fdf5ef}
+.auth-input-box:has(input[aria-invalid=true]) .auth-input-icon{background:#f3e3d8;color:#a86950}
+.auth-input-box input:-webkit-autofill{-webkit-text-fill-color:#1f3e2b;box-shadow:0 0 0 1000px #f1f6ea inset}
+.form-grid input[readonly]{background:#edf2e8;color:#5a7050;border-style:dashed;cursor:default}
+.user>div{min-width:0}.user strong{overflow-wrap:anywhere;line-height:1.5;display:block}
+@media(max-width:520px){.auth-input-box input{font-size:16px}}

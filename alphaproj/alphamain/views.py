@@ -37,6 +37,6 @@ def feed_view(request):
              'published_at', 'category', 'kind', 'bank_analysis', 'bank_source_url'))
     return render(request, 'alphamain/feed.html', {
         'news_data': articles,
-        'account_data': {'id': request.user.pk, 'name': request.user.first_name or request.user.email},
+        'account_data': {'id': request.user.pk, 'name': request.user.get_full_name() or request.user.email},
         'has_news': bool(articles),
     })

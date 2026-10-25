@@ -7,7 +7,7 @@ const numericFields = ['loan','spread','metal','imports','equipment'];
 function load(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
 function validProfile(value) {return value && typeof value.name==='string' && value.name.trim() && typeof value.company==='string' && value.company.trim() && ['yes','no'].includes(value.floating) && numericFields.every(key=>Number.isFinite(value[key]) && value[key]>=0 && value[key]<=(key==='spread'?50:1000000));}
 const storedProfile = load(storagePrefix+'profile',defaults);
-let profile = validProfile(storedProfile) ? storedProfile : {...defaults};
+let profile = validProfile(storedProfile) ? {...storedProfile, name:account.name} : {...defaults};
 const storedSaved = load(storagePrefix+'saved',[]);
 let saved = new Set(Array.isArray(storedSaved) ? storedSaved.filter(id=>Number.isInteger(id)&&id>=1) : []);
 let filter = 'all', view = 'all', query = '';
@@ -50,8 +50,8 @@ function render(animate = true) {
  document.querySelector('#total-count').textContent=news.length;
  document.querySelector('#risk-count').textContent=news.filter(n=>n.type==='risk').length;
  document.querySelector('#opportunity-count').textContent=news.filter(n=>n.type==='opportunity').length;
- document.querySelector('#user-name').textContent=profile.name;
- document.querySelector('#greeting').textContent=profile.name;
+ document.querySelector('#user-name').textContent=account.name;
+ document.querySelector('#greeting').textContent=account.name;
  document.querySelector('#saved-count').textContent=saved.size;
  document.querySelector('#view-title').textContent=view==='saved'?'Сохранённое':'Моя лента';
  const visible=news.filter(n=>(view!=='saved'||saved.has(n.id))&&(filter==='all'||n.type===filter)&&(`${escapeHtml(n.title)} ${escapeHtml(n.summary)} ${escapeHtml(n.category)}`.toLowerCase().includes(query.toLowerCase())));
@@ -67,5 +67,5 @@ const form=document.querySelector('#profile-form');
 function openProfile(){Object.entries(profile).forEach(([key,value])=>{if(form.elements.namedItem(key))form.elements.namedItem(key).value=value;});dialog.showModal();}
 ['company-button','profile-button','edit-profile'].forEach(id=>document.getElementById(id).addEventListener('click',openProfile));
 document.querySelector('#close-dialog').addEventListener('click',()=>dialog.close());
-form.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(form);const next={name:String(data.get('name')).trim(),company:String(data.get('company')).trim(),floating:data.get('floating')};numericFields.forEach(key=>next[key]=Number(data.get(key)));if(!validProfile(next)){toast('Проверьте имя, компанию и числовые значения.');return;}profile=next;persist(storagePrefix+'profile',profile);render();dialog.close();toast('Профиль сохранён. Последствия новостей пересчитаны.');});
+form.addEventListener('submit',event=>{event.preventDefault();const data=new FormData(form);const next={name:account.name,company:String(data.get('company')).trim(),floating:data.get('floating')};numericFields.forEach(key=>next[key]=Number(data.get(key)));if(!validProfile(next)){toast('Проверьте имя, компанию и числовые значения.');return;}profile=next;persist(storagePrefix+'profile',profile);render();dialog.close();toast('Профиль сохранён. Последствия новостей пересчитаны.');});
 render();
