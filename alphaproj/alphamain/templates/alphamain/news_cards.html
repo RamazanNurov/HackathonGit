@@ -1,0 +1,15 @@
+{% for article in news_data %}
+<article class="news-card">
+  <div class="news-top"><div class="meta">
+    <span class="source">{{ article.source_name }}</span><span>·</span>
+    <span>{{ article.published_at|date:'d.m.Y' }}</span>
+    <span class="badge {{ article.kind }}">{% if article.kind == 'risk' %}Требует внимания{% elif article.kind == 'opportunity' %}Возможность{% else %}К сведению{% endif %}</span>
+  </div><button class="save" data-save="{{ article.id }}" aria-label="Сохранить новость" aria-pressed="false">☆</button></div>
+  <h2>{{ article.title }}</h2>
+  <p class="summary">{{ article.summary }}</p>
+  <div class="analysis"><span class="analysis-label">✦ ЧТО ЭТО ЗНАЧИТ ДЛЯ ВАШЕГО БИЗНЕСА</span><p>Персональный разбор этой новости ещё не подготовлен.</p></div>
+  <div class="card-bottom"><span class="category">{{ article.category }}</span><a class="detail-button" href="{{ article.source_url }}" target="_blank" rel="noopener noreferrer">Читать первоисточник ↗</a></div>
+</article>
+{% empty %}
+<div class="empty">Пока нет опубликованных новостей. Загрузите их командой import_news или добавьте через админку.</div>
+{% endfor %}

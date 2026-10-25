@@ -140,14 +140,19 @@ class NewsTests(TestCase):
         response = self.client.get('/')
         self.assertEqual([row['id'] for row in response.context['news_data']], [published.pk])
         self.assertTrue(response.context['has_news'])
+        self.assertContains(response, f'<h2>{published.title}</h2>', html=True)
+        self.assertContains(response, published.source_url)
+        self.assertTemplateUsed(response, 'alphamain/news_cards.html')
         self.assertTemplateUsed(response, 'alphamain/base.html')
 
-    def test_empty_database_keeps_demo_mode(self):
+    def test_empty_database_shows_empty_state_without_demo_news(self):
         for url in ('/',):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
             self.assertFalse(response.context['has_news'])
-            self.assertContains(response, 'Демонстрационные данные')
+            self.assertContains(response, 'Пока нет опубликованных новостей.')
+            self.assertNotContains(response, 'Демонстрационные данные')
+            self.assertNotContains(response, 'ЦБ сохранил')
 
     def test_article_text_is_serialized_safely(self):
         self.create_news(title='</script><script>alert(1)</script>')

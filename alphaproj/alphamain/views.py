@@ -39,4 +39,6 @@ def feed_view(request):
         'news_data': articles,
         'account_data': {'id': request.user.pk, 'name': request.user.get_full_name() or request.user.email},
         'has_news': bool(articles),
+        'risk_count': sum(article['kind'] == News.Kind.RISK for article in articles),
+        'opportunity_count': sum(article['kind'] == News.Kind.OPPORTUNITY for article in articles),
     })
