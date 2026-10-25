@@ -45,13 +45,32 @@ class AuthTests(TestCase):
 
     def test_login_logout_and_protected_feed(self):
         User.objects.create_user(username='director@example.com', password=self.password)
-        self.assertRedirects(self.client.get('/'), '/v1/login/?next=/')
+        response = self.client.get('/')
+        self.assertRedirects(response, '/login/?next=/')
+        self.assertNotContains(response, 'news-data', status_code=302)
         response = self.client.post(reverse('login'), {'username': 'DIRECTOR@example.com', 'password': self.password})
         self.assertRedirects(response, '/')
         self.assertContains(self.client.get('/'), 'account-data')
         self.assertEqual(self.client.get(reverse('logout')).status_code, 405)
         self.assertRedirects(self.client.post(reverse('logout')), reverse('login'))
         self.assertNotIn('_auth_user_id', self.client.session)
+        self.assertRedirects(self.client.get('/'), '/login/?next=/')
+
+    def test_routes_have_one_canonical_address(self):
+        for name, url in (('home', '/'), ('login', '/login/'),
+                          ('register', '/register/'), ('logout', '/logout/')):
+            with self.subTest(name=name):
+                self.assertEqual(reverse(name), url)
+        for url in ('/v1/', '/v1/login/', '/v1/register/', '/v1/logout/'):
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_authenticated_users_skip_account_pages(self):
+        user = User.objects.create_user(username='director@example.com', password=self.password)
+        self.client.force_login(user)
+        for name in ('login', 'register'):
+            with self.subTest(name=name):
+                self.assertRedirects(self.client.get(reverse(name)), '/')
 
     def test_wrong_password_and_inactive_user(self):
         user = User.objects.create_user(username='director@example.com', password=self.password)
@@ -106,7 +125,7 @@ class NewsTests(TestCase):
         self.assertTemplateUsed(response, 'alphamain/base.html')
 
     def test_empty_database_keeps_demo_mode(self):
-        for url in ('/', '/v1/'):
+        for url in ('/',):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
             self.assertFalse(response.context['has_news'])
