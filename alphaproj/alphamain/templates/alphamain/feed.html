@@ -1,24 +1,30 @@
+{% extends 'alphamain/base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="ru">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Контекст — новости с пониманием вашего бизнеса</title><link rel="stylesheet" href="{% static 'alphamain/feed.css' %}"><script src="{% static 'alphamain/feed.js' %}" defer></script></head>
-<body>
+{% block title %}Моя лента — Контекст{% endblock %}
+{% block content %}
 <aside class="sidebar">
 <a class="brand" href="/">к<span class="brand-mark">✳</span>нтекст<span class="ai">AI</span></a>
 <p class="eyebrow">ВАШ БИЗНЕС В КОНТЕКСТЕ</p>
 <button class="company" id="company-button"><span class="company-icon">С</span><span><strong id="company-name">Северстальмаш</strong><small>Профиль компании ↗</small></span></button>
 <nav aria-label="Основная навигация"><button class="nav active" data-view="all">◫ <span>Моя лента</span><span class="nav-count">6</span></button><button class="nav" data-view="saved">♧ <span>Сохранённое</span><span id="saved-count">0</span></button><button class="nav" id="profile-button">⚙ <span>Профиль бизнеса</span></button></nav>
 <div class="sidebar-note"><span class="spark">✦</span><strong>Информация → решения</strong><p>Каждая новость — через призму вашей компании.</p><span class="demo-label">ДЕМО ДЛЯ ХАКАТОНА</span></div>
-<div class="user"><span class="avatar">ИИ</span><div><strong id="user-name">Иван Иванович</strong><small>Руководитель компании</small></div></div>
+<div class="user"><span class="avatar">{{ request.user.first_name|slice:":1" }}</span><div><strong id="user-name">{{ request.user.first_name }}</strong><small>Руководитель компании</small></div></div>
+<form method="post" action="{% url 'logout' %}" class="logout-form">{% csrf_token %}<button class="outline" type="submit">Выйти из аккаунта ↗</button></form>
 </aside>
-<div class="workspace"><header><span>Обзор бизнеса <span class="slash">/</span> <strong id="view-title">Моя лента</strong></span><span class="demo-pill"><i></i> Демонстрационные данные</span></header>
+<div class="workspace"><header><span>Обзор бизнеса <span class="slash">/</span> <strong id="view-title">Моя лента</strong></span><span class="demo-pill"><i></i> {% if has_news %}Новости из базы{% else %}Демонстрационные данные{% endif %}</span></header>
 <main><div class="intro"><div><p class="eyebrow green">ПЕРСОНАЛЬНАЯ БИЗНЕС-АНАЛИТИКА</p><h1>Новости. Последствия. Решения<span>.</span></h1><p class="lead"><span id="greeting">Иван Иванович</span>, вот что может повлиять на ваш бизнес.</p></div><button class="outline" id="edit-profile">Настроить контекст ↗</button></div>
-<section class="brief"><div class="brief-icon">✦</div><div><div class="brief-heading">Главное для вашей компании <span>КРАТКИЙ ОБЗОР</span></div><p>Высокая ставка сохраняет нагрузку на кредит. Рост цен на металл влияет на себестоимость. Льготное финансирование может поддержать обновление оборудования.</p><small>Сценарный разбор на основе вашего профиля · без подключения языковой модели</small></div></section>
-<section class="metrics" aria-label="Обзор ленты"><div><span>В фокусе</span><strong>6 <small>новостей</small></strong><p>Отобраны для вашего бизнеса</p></div><div><span><i class="dot red"></i> Требуют внимания</span><strong>3 <small>риска</small></strong><p>Финансы, сырьё и логистика</p></div><div><span><i class="dot green-bg"></i> Точки роста</span><strong>2 <small>возможности</small></strong><p>Поддержка и новые рынки</p></div></section>
+{% if not has_news %}<section class="brief"><div class="brief-icon">✦</div><div><div class="brief-heading">Главное для вашей компании <span>КРАТКИЙ ОБЗОР</span></div><p>Высокая ставка сохраняет нагрузку на кредит. Рост цен на металл влияет на себестоимость. Льготное финансирование может поддержать обновление оборудования.</p><small>Сценарный разбор на основе вашего профиля · без подключения языковой модели</small></div></section>{% endif %}
+<section class="metrics" aria-label="Обзор ленты"><div><span>В фокусе</span><strong><span id="total-count">6</span> <small>новостей</small></strong><p>Доступные публикации</p></div><div><span><i class="dot red"></i> Требуют внимания</span><strong><span id="risk-count">3</span> <small>риска</small></strong><p>События с отметкой «Риск»</p></div><div><span><i class="dot green-bg"></i> Точки роста</span><strong><span id="opportunity-count">2</span> <small>возможности</small></strong><p>События с отметкой «Возможность»</p></div></section>
 <div class="feed-toolbar"><div class="tabs" role="group" aria-label="Фильтр новостей"><button class="selected" data-filter="all">Все новости <span>6</span></button><button data-filter="risk">Риски</button><button data-filter="opportunity">Возможности</button><button data-filter="neutral">К сведению</button></div><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Поиск по ленте" aria-label="Поиск по ленте"></label></div>
-<div class="feed-label"><span id="results-label">ВАЖНОЕ ДЛЯ ВАС</span><span>По значимости ↓</span></div><div id="feed" class="feed" aria-live="polite"></div>
-<footer>Контекст · прототип для хакатона <span>Все события и расчёты в ленте — учебные сценарии.</span></footer>
+<div class="feed-label"><span id="results-label">ВАЖНОЕ ДЛЯ ВАС</span><span>{% if has_news %}Сначала новые ↓{% else %}По значимости ↓{% endif %}</span></div><div id="feed" class="feed" aria-live="polite"></div>
+<footer>Контекст · прототип для хакатона <span>{% if has_news %}Факты и позиция банка отделены от персональной интерпретации.{% else %}Все события и расчёты в ленте — учебные сценарии.{% endif %}</span></footer>
 </main></div>
 <dialog id="profile-dialog"><form id="profile-form"><div class="dialog-top"><span class="eyebrow green">КОНТЕКСТ ВАШЕГО БИЗНЕСА</span><button type="button" id="close-dialog" class="close" aria-label="Закрыть">×</button></div><h2>Расскажите о компании</h2><p class="muted">Измените цифры — и разбор новостей изменится вместе с ними. Профиль хранится в этом браузере.</p><div class="form-grid"><label>Ваше имя<input name="name" required maxlength="80"></label><label>Компания<input name="company" required maxlength="80"></label><label>Кредит, млн ₽<input name="loan" type="number" min="0" max="1000000" step="0.1" required></label><label>Надбавка к ключевой ставке, п. п.<input name="spread" type="number" min="0" max="50" step="0.1" required></label><label>Закупки металла в месяц, млн ₽<input name="metal" type="number" min="0" max="1000000" step="0.1" required></label><label>Импорт в месяц, млн ₽<input name="imports" type="number" min="0" max="1000000" step="0.1" required></label><label>Бюджет на оборудование, млн ₽<input name="equipment" type="number" min="0" max="1000000" step="0.1" required></label><label>Тип ставки<select name="floating"><option value="yes">Плавающая</option><option value="no">Фиксированная</option></select></label></div><button class="primary" type="submit">Сохранить и пересчитать ленту →</button></form></dialog>
 <div id="toast" role="status"></div>
-</body></html>
+
+{% endblock %}
+{% block scripts %}
+{{ account_data|json_script:'account-data' }}
+{{ news_data|json_script:'news-data' }}
+<script src="{% static 'alphamain/feed.js' %}" defer></script>
+{% endblock %}

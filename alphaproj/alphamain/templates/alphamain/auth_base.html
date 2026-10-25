@@ -1,0 +1,15 @@
+{% extends 'alphamain/base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block content %}
+<main class="auth-layout">
+  <section class="auth-story">
+    <a class="brand" href="{% url 'home' %}">к<span class="brand-mark">✳</span>нтекст<span class="ai">AI</span></a>
+    <div><p class="eyebrow green">ВАШ БИЗНЕС В КОНТЕКСТЕ</p><h1>Новости.<br>Последствия.<br>Решения<span>.</span></h1><p class="lead">Понимайте, как события влияют на вашу компанию.<br>Принимайте решения с учётом своего бизнеса.</p></div>
+    <span class="auth-footnote">Персональная бизнес-аналитика · прототип для хакатона</span>
+  </section>
+  <section class="auth-card" aria-labelledby="auth-title">
+    <span class="auth-symbol" aria-hidden="true">✦</span>
+    {% block auth_content %}{% endblock %}
+  </section>
+</main>
+{% endblock %}

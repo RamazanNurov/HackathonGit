@@ -1,0 +1,14 @@
+{% extends 'alphamain/auth_base.html' %}
+{% block title %}Вход — Контекст{% endblock %}
+{% block auth_content %}
+<p class="eyebrow green">С ВОЗВРАЩЕНИЕМ</p>
+<h2 id="auth-title">Войти в Контекст</h2>
+<p class="muted">Продолжите следить за важным для вашей компании.</p>
+<form method="post" class="auth-form">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  {% include 'alphamain/form_fields.html' %}
+  <button type="submit" class="primary">Войти →</button>
+</form>
+<p class="auth-switch">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+{% endblock %}
