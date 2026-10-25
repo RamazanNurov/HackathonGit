@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Контекст — аналитика для бизнеса{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'alphamain/feed.css' %}">
+  <link rel="stylesheet" href="{% static 'alphamain/visual.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
 {% block content %}{% endblock %}
 {% block scripts %}{% endblock %}
+<script src="{% static 'alphamain/visual.js' %}" defer></script>
 </body>
 </html>
