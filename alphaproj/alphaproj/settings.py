@@ -98,3 +98,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# RSS/Atom sources for the import_news management command.
+NEWS_FEED_URLS = ['https://tass.ru/rss/v2.xml']

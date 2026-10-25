@@ -37,7 +37,7 @@ function articleDetails(n) {
  if(n.demo) return '<p>Событие вымышленное. Разбор рассчитан правилами, без языковой модели.</p>';
  return `<p><strong>Первоисточник.</strong> ${sourceLink(n.source_url,n.source_name)}</p>
  ${n.bank_analysis?`<p><strong>Позиция банка (из указанного материала).</strong> ${escapeHtml(n.bank_analysis)}</p><p>${sourceLink(n.bank_source_url,'Источник позиции банка')}</p>`:''}
- <details><summary>Полный текст</summary><p class="article-content">${escapeHtml(n.content)}</p></details>`;
+ <details><summary>Текст источника / анонс RSS</summary><p class="article-content">${escapeHtml(n.content)}</p></details>`;
 }
 function escapeHtml(value) {return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 let toastTimer;
